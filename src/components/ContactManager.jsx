@@ -443,7 +443,7 @@ const handleImportCSV = () => {
                       Add Contact
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="bg-white text-black shadow-xl backdrop:!bg-white/80">
                     <DialogHeader>
                       <DialogTitle>Add New Contact</DialogTitle>
                       <DialogDescription>

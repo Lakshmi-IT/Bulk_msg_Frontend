@@ -38,7 +38,8 @@ const Index = () => {
     phone: "",
     email: "",
     password: "",
-    role: ""
+    role: "",
+    SubscritionType:""
   });
 
   const handleChange = (e) => {
@@ -65,7 +66,8 @@ const Index = () => {
         phone: "",
         email: "",
         password: "",
-        role: ""
+        role: "",
+        SubscritionType:""
       });
 
       toast({
@@ -127,7 +129,8 @@ const Index = () => {
         phone: "",
         email: "",
         password: "",
-        role: ""
+        role: "",
+        SubscritionType:""
       });
 
 
@@ -160,7 +163,8 @@ const Index = () => {
       phone: "",
       email: "",
       password: "",
-      role: ""
+      role: "",
+      SubscritionType:""
     });
 
 
@@ -598,6 +602,24 @@ const Index = () => {
                   <option value="">Select role</option>
                   <option value="admin">Admin</option>
                   <option value="user">User</option>
+                </select>
+              </div>
+
+
+              <div className="space-y-2">
+                <Label htmlFor="SubscritionType">Subscrition Type</Label>
+                <select
+                  id="SubscritionType"
+                  name="SubscritionType"
+                  value={formData.SubscritionType}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                ><option value="">Select Subscription Type</option>
+                  <option value="Starter">Starter (Daily limit: 1000 messages)</option>
+                  <option value="Pro">Pro (Daily limit: 5000 messages)</option>
+                  <option value="Business">Business (Daily limit: 10,000 messages)</option>
+               
                 </select>
               </div>
 

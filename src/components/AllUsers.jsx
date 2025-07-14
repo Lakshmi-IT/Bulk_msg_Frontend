@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Pencil, Trash2, User } from 'lucide-react';
 import axios from 'axios';
-import {url} from "../utils"
+import { url } from "../utils"
 
 const UserDetails = () => {
     const [users, setUsers] = useState([]);
@@ -41,9 +41,9 @@ const UserDetails = () => {
     const handleEditUser = async (e) => {
         e.preventDefault();
         try {
-            const { username, email, phone } = editingUser;
+            const { username, email, phone,SubscritionType,isActive } = editingUser;
             await axios.put(`${url}/api/auth/updateUser/${editingUser._id}`, {
-                username, email, phone
+                username, email, phone,SubscritionType,isActive
             });
             setUsers((prev) =>
                 prev.map((u) => (u._id === editingUser._id ? editingUser : u))
@@ -74,7 +74,7 @@ const UserDetails = () => {
         (user) =>
             user.username?.toLowerCase()?.includes(search.toLowerCase()) ||
             user.phone?.toLowerCase()?.includes(search.toLowerCase()) ||
-
+            user.subscriptionType?.toLowerCase()?.includes(search.toLowerCase()) ||
             user.email?.toLowerCase()?.includes(search.toLowerCase())
     );
 
@@ -103,6 +103,8 @@ const UserDetails = () => {
                                     <TableHead>Email</TableHead>
                                     <TableHead>Role</TableHead>
                                     <TableHead>Registered On</TableHead>
+                                    <TableHead>Subscription Type</TableHead>
+                                      <TableHead>Status</TableHead>
                                     <TableHead>Actions</TableHead>
 
                                 </TableRow>
@@ -116,7 +118,10 @@ const UserDetails = () => {
                                             <TableCell>{user?.phone}</TableCell>
                                             <TableCell>{user?.email}</TableCell>
                                             <TableCell className="capitalize">{user?.role}</TableCell>
+
                                             <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                                            <TableCell className="capitalize">{user?.SubscritionType || "Stater"}</TableCell>
+                                            <TableCell className={`capitalize font-semibold ${user?.isActive? "text-green-500": "text-red-500"} `}>{user?.isActive ? "Active": "Inactive"}</TableCell>
                                             <TableCell className="space-x-5 flex items-center">
                                                 <button
                                                     onClick={() => handleEdit(user)}
@@ -191,6 +196,41 @@ const UserDetails = () => {
                                         }
                                     />
                                 </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Subscription Type:</label>
+                                    <select
+                                        className="w-full border rounded px-3 py-2"
+                                        value={editingUser.SubscritionType || ""}
+                                        onChange={(e) =>
+                                            setEditingUser({ ...editingUser, SubscritionType: e.target.value })
+                                        }
+                                    >
+                                        <option value="">Select Subscription Type</option>
+                                        <option value="starter">Starter (Up to 1000 contacts)</option>
+                                        <option value="pro">Pro (Up to 5,000 contacts)</option>
+                                        <option value="business">Business (Up to 10,000 contacts)</option>
+                                     
+                                    </select>
+                                </div>
+
+
+                                 <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Status:</label>
+                                    <select
+                                        className="w-full border rounded px-3 py-2"
+                                       value={editingUser.isActive}
+                                        onChange={(e) =>
+                                            setEditingUser({ ...editingUser, isActive: e.target.value })
+                                        }
+                                    >
+                                        <option value="">Select Status Type</option>
+                                        <option value="true">Active</option>
+                                        <option value="false">Inactive</option>
+                                   
+                                     
+                                    </select>
+                                </div>
+
                             </div>
 
                             <div className="flex justify-end space-x-2 mt-6">
