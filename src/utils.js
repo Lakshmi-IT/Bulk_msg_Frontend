@@ -1,0 +1,1 @@
+export const url="https://bulkmsg-backend.onrender.com"

@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import axios from 'axios';
 import Papa from 'papaparse';
+import { url } from '../utils';
 
 
 const ContactManager = ({ contacts, setContacts }) => {
@@ -60,7 +61,7 @@ const ContactManager = ({ contacts, setContacts }) => {
    
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/users/contacts/${id}`,
+        `${url}/api/users/contacts/${id}`,
         editedContact,
         {
           headers: {
@@ -96,7 +97,7 @@ const ContactManager = ({ contacts, setContacts }) => {
   const handleDeleteContact = async (id) => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/users/contacts/${id}`,
+        `${url}/api/users/contacts/${id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -151,7 +152,7 @@ const ContactManager = ({ contacts, setContacts }) => {
 
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/users/contacts',
+        `${url}/api/users/contacts`,
         {
           name: name.trim(),
           phone: cleanedPhone,
@@ -210,7 +211,7 @@ const ContactManager = ({ contacts, setContacts }) => {
         return;
       }
 
-      const response = await axios.get("http://localhost:5000/api/users/get-contacts", {
+      const response = await axios.get(`${url}/api/users/get-contacts`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -302,7 +303,7 @@ const handleImportCSV = () => {
 
           // Send to backend
           await axios.post(
-            'http://localhost:5000/api/users/contacts/bulk',
+            `${url}/api/users/contacts/bulk`,
             { contacts: validContacts },
             {
               headers: {

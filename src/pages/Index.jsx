@@ -14,6 +14,7 @@ import MessageComposer from '../components/MessageComposer';
 import BulkSender from '../components/BulkSender';
 import axios from "axios";
 import UserDetails from '../components/AllUsers';
+import { url } from '../utils';
 
 const Index = () => {
   const [contacts, setContacts] = useState([
@@ -50,7 +51,7 @@ const Index = () => {
 
   const handleRegister = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/register", formData, {
+      const res = await axios.post(`${url}/api/auth/register`, formData, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -92,7 +93,7 @@ const Index = () => {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", formData, {
+      const res = await axios.post(`${url}/api/auth/login`, formData, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -198,7 +199,7 @@ const Index = () => {
   //       return;
   //     }
 
-  //     const response = await axios.get("http://localhost:5000/api/auth/getAdmins", {
+  //     const response = await axios.get(`${url}/api/auth/getAdmins`, {
   //       headers: {
   //         Authorization: `Bearer ${token}`,
   //       },

@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import axios from 'axios';
+import { url } from '../utils';
 
 const BulkSender = ({ contacts }) => {
   const [selectedContacts, setSelectedContacts] = useState([]);
@@ -64,7 +65,7 @@ const BulkSender = ({ contacts }) => {
     const userId = localStorage.getItem('userId')
     const fetchQr = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/get-qr/${userId}`);
+        const res = await axios.get(`${url}/get-qr/${userId}`);
         setQr(res?.data?.qr || "");
         setBotStatus(res?.data?.ready)
       } catch (err) {
@@ -116,16 +117,14 @@ const BulkSender = ({ contacts }) => {
         return;
       }
       const payload = {
-        contactIds: selectedContacts, // array of selected contact _id's
+        contactIds: selectedContacts, 
         message,
-        messageType, // whatsapp / sms
+        messageType, 
       };
-
-
 
       console.log(payload, "payload")
 
-      const response = await axios.post('http://localhost:5000/api/bulk/bulk-message', payload, {
+      const response = await axios.post(`${url}/api/bulk/bulk-message`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

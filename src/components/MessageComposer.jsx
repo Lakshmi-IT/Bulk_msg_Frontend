@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import axios from 'axios';
+import { url } from '../utils';
 
 const MessageComposer = () => {
   const [messageType, setMessageType] = useState('sms');
@@ -46,7 +47,7 @@ const MessageComposer = () => {
         return;
       }
 
-      const response = await axios.get("http://localhost:5000/api/templates", {
+      const response = await axios.get(`${url}/api/templates`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -121,7 +122,7 @@ const MessageComposer = () => {
       console.log(payload, "payload")
 
       const response = await axios.post(
-        'http://localhost:5000/api/templates/templates',
+        `${url}/api/templates/templates`,
         payload,
         {
           headers: {

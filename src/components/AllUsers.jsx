@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Pencil, Trash2, User } from 'lucide-react';
 import axios from 'axios';
+import {url} from "../utils"
 
 const UserDetails = () => {
     const [users, setUsers] = useState([]);
@@ -17,7 +18,7 @@ const UserDetails = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/auth/getAdmins'); // Adjust to your backend route
+                const res = await axios.get(`${url}/api/auth/getAdmins`); // Adjust to your backend route
                 setUsers(res?.data?.data || []);
             } catch (err) {
                 console.error('Failed to load users', err);
@@ -41,7 +42,7 @@ const UserDetails = () => {
         e.preventDefault();
         try {
             const { username, email, phone } = editingUser;
-            await axios.put(`http://localhost:5000/api/auth/updateUser/${editingUser._id}`, {
+            await axios.put(`${url}/api/auth/updateUser/${editingUser._id}`, {
                 username, email, phone
             });
             setUsers((prev) =>
@@ -60,7 +61,7 @@ const UserDetails = () => {
         if (!window.confirm('Are you sure you want to delete this user?')) return;
 
         try {
-            await axios.delete(`http://localhost:5000/api/auth/delete/${userId}`);
+            await axios.delete(`${url}/api/auth/delete/${userId}`);
             setUsers((prev) => prev.filter((u) => u._id !== userId));
         } catch (err) {
             console.error('Delete failed', err);
