@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import axios from 'axios';
 import { url } from '../utils';
+import QRCode from "qrcode"; 
 
 const BulkSender = ({ contacts }) => {
   const [selectedContacts, setSelectedContacts] = useState([]);
@@ -30,6 +31,7 @@ const BulkSender = ({ contacts }) => {
 
   const [qr, setQr] = useState("")
   const [botstatus, setBotStatus] = useState(false)
+  const [qrImage, setQrImage] = useState("");
   const { toast } = useToast();
 
   const groups = [...new Set(contacts.map(contact => contact.group))];
@@ -60,14 +62,20 @@ const BulkSender = ({ contacts }) => {
     }
   };
 
-
   useEffect(() => {
-    const userId = localStorage.getItem('userId')
+    const userId = localStorage.getItem("userId");
     const fetchQr = async () => {
       try {
         const res = await axios.get(`${url}/get-qr/${userId}`);
-        setQr(res?.data?.qr || "");
-        setBotStatus(res?.data?.ready)
+        const rawQr = res?.data?.qr || "";
+        setQr(rawQr);
+        setBotStatus(res?.data?.ready);
+
+        // ✅ Convert QR string to image
+        if (rawQr) {
+          const qrImageUrl = await QRCode.toDataURL(rawQr);
+          setQrImage(qrImageUrl);
+        }
       } catch (err) {
         console.error("Failed to load QR", err);
       }
@@ -75,7 +83,6 @@ const BulkSender = ({ contacts }) => {
 
     fetchQr();
   }, []);
-
 
   console.log(botstatus, "botstatus")
 
@@ -117,9 +124,9 @@ const BulkSender = ({ contacts }) => {
         return;
       }
       const payload = {
-        contactIds: selectedContacts, 
+        contactIds: selectedContacts,
         message,
-        messageType, 
+        messageType,
       };
 
       console.log(payload, "payload")
@@ -157,6 +164,8 @@ const BulkSender = ({ contacts }) => {
 
   const selectedContactsData = contacts.filter(contact => selectedContacts.includes(contact._id));
 
+  console.log(qrImage,"qrImage")
+
 
 
   return (
@@ -176,7 +185,7 @@ const BulkSender = ({ contacts }) => {
             {!botstatus ? (
               qr ? (
                 <>
-                  <img src={qr} alt="Scan the QR" className="w-[150px] h-[150px]" />
+                  <img src={qrImage} alt="Scan the QR" className="w-[150px] h-[150px]" />
                   <p>Scan this QR code</p>
                 </>
               ) : (

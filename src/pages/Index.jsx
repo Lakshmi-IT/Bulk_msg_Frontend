@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { MessageSquare, Send, Users, Plus, Upload, Download, LogIn, LogOut, User, PlusCircle } from 'lucide-react';
+import { MessageSquare, Send, Users, Plus, Upload, Download, LogIn, LogOut, User, PlusCircle, LogInIcon, ArrowDown, ChevronDown } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,6 +15,16 @@ import BulkSender from '../components/BulkSender';
 import axios from "axios";
 import UserDetails from '../components/AllUsers';
 import { url } from '../utils';
+import HeroSection from '../components/HeroSection';
+import FeaturedSection from '../components/FeaturedSection';
+import WhatyougetSection from '../components/WhatyougetSection';
+import FeatureSection from '../components/SmallFeatures';
+import SmallFeatures from '../components/SmallFeatures';
+import Testmonials from '../components/Testmonials';
+import LoginSection from '../components/LoginSection';
+import Footer from '../components/Footer';
+import Contact from '../components/Contact';
+import Pricing from '../components/Pricing';
 
 const Index = () => {
   const [contacts, setContacts] = useState([
@@ -27,6 +37,7 @@ const Index = () => {
   const [user, setUser] = useState(null);
   const { toast } = useToast();
   const [register, setRegister] = useState(false)
+  const [menuLogin, setMenuLogin] = useState(false)
 
 
 
@@ -39,7 +50,7 @@ const Index = () => {
     email: "",
     password: "",
     role: "",
-    SubscritionType:""
+    SubscritionType: ""
   });
 
   const handleChange = (e) => {
@@ -67,7 +78,7 @@ const Index = () => {
         email: "",
         password: "",
         role: "",
-        SubscritionType:""
+        SubscritionType: ""
       });
 
       toast({
@@ -130,7 +141,7 @@ const Index = () => {
         email: "",
         password: "",
         role: "",
-        SubscritionType:""
+        SubscritionType: ""
       });
 
 
@@ -164,7 +175,7 @@ const Index = () => {
       email: "",
       password: "",
       role: "",
-      SubscritionType:""
+      SubscritionType: ""
     });
 
 
@@ -191,41 +202,18 @@ const Index = () => {
   }
 
 
-  //   const fetchAdminsData = async () => {
-  //   try {
-  //     const token = localStorage.getItem("token");
-  //     if (!token) {
-  //       toast({
-  //         title: "Unauthorized",
-  //         description: "User token not found. Please login again.",
-  //         variant: "destructive",
-  //       });
-  //       return;
-  //     }
 
-  //     const response = await axios.get(`${url}/api/auth/getAdmins`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
 
-  //     // Directly use response.data if it's already an array
-  //     if (response.status === 200 && Array.isArray(response.data)) {
-  //       setContacts(response.data);
-  //     } else {
-  //       throw new Error("Unexpected response from server.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Fetch contacts error:", error);
-  //     toast({
-  //       title: "Error Fetching Contacts",
-  //       description:
-  //         error.response?.data?.message ||
-  //         "Failed to load contacts. Please try again later.",
-  //       variant: "destructive",
-  //     });
-  //   }
-  // };
+  const handleHomeLogin = () => {
+    setMenuLogin(true)
+
+
+  }
+
+  const handleCancelLogin = () => {
+    setMenuLogin(false)
+
+  }
 
 
   const stats = {
@@ -260,9 +248,9 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-full  px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 cursor-pointer" onClick={handleCancelLogin}>
               <div className="bg-gradient-to-r from-blue-600 to-green-600 p-2 rounded-lg">
                 <MessageSquare className="h-6 w-6 text-white" />
               </div>
@@ -284,8 +272,10 @@ const Index = () => {
               }
 
               {/* Authentication Section */}
+
               {isLoggedIn ? (
                 <div className="flex items-center space-x-3">
+
                   <div className="flex items-center space-x-2">
                     <div className="bg-blue-100 p-2 rounded-full">
                       <User className="h-4 w-4 text-blue-600" />
@@ -306,65 +296,84 @@ const Index = () => {
                   </Button>
                 </div>
               ) : (
-                null
+                <div className="flex items-center space-x-9 ">
+                  <div className='lg:flex items-center space-x-9 hidden'>
+
+                    <div className="flex justify-between items-center space-x-2">
+                      <p>Features</p>
+                      <ChevronDown className="w-5 h-5" />
 
 
 
+
+                    </div>
+                    <div className="flex justify-between items-center space-x-2">
+                      <p>Use Cases</p>
+                      <ChevronDown className="w-5 h-5" />
+
+
+
+
+                    </div>
+                    <div className="flex justify-between items-center space-x-2">
+                      <p>Resorces</p>
+                      <ChevronDown className="w-5 h-5" />
+
+
+
+
+                    </div>
+                    <div className="flex justify-between items-center space-x-2">
+                      <p>Pricing</p>
+                      {/* <ChevronDown className="w-5 h-5" /> */}
+
+
+
+
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleHomeLogin}
+                    className="flex items-center space-x-2"
+                  >
+                    <LogInIcon className="h-4 w-4" />
+                    <span className="hidden sm:inline">LogIn</span>
+                  </Button>
+                </div>
               )}
             </div>
           </div>
         </div>
       </header>
+      <div className='md:p-10 p-5 '>
 
-      {!register ? (
+        {!register ? (
+          !isLoggedIn ? (
+            !menuLogin ? (
+              <div className="max-w-full  px-4 sm:px-6 lg:px-8 py-8">
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {!isLoggedIn ? (
+                <HeroSection />
+                <SmallFeatures />
+                <FeaturedSection />
+                <WhatyougetSection />
+                <Testmonials />
+                <Pricing/>
+                <Contact/>
+                <Footer/>
 
-            <div className="max-w-md mx-auto mt-20">
-              <Card className="bg-white/70 backdrop-blur-sm border-gray-200">
-                <CardHeader className="text-center">
-                  <div className="bg-gradient-to-r from-blue-600 to-green-600 p-3 rounded-lg w-fit mx-auto mb-4">
-                    <MessageSquare className="h-8 w-8 text-white" />
-                  </div>
-                  <CardTitle className="text-2xl">Welcome to BulkMessenger Pro</CardTitle>
-                  <CardDescription>Please log in to access your messaging dashboard</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="Enter your password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <Button onClick={handleLogin} className="w-full bg-blue-600 hover:bg-blue-700">
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Login
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+              </div>
+            ) : (
+              <LoginSection handleCancelLogin={handleCancelLogin} handleLogin={handleLogin} handleChange={handleChange} formData={formData} />
+
+            )
           ) : (
-            /* Main Application */
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 ">
+
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 w-full overflow-x-scroll">
               {/* Navigation */}
-              <TabsList className="flex w-full  mx-auto bg-white/50 backdrop-blur-sm gap-2 overflow-x-auto px-2 py-1 rounded-lg scrollbar-thin scrollbar-thumb-blue-300">
+              <TabsList className="flex w-full  mx-auto bg-white/50 backdrop-blur-sm gap-2 overflow-x-scroll px-2 py-1 rounded-lg scrollbar-thin scrollbar-thumb-blue-300">
                 <TabsTrigger
                   value="dashboard"
                   className="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-medium data-[state=active]:bg-blue-600 data-[state=active]:text-white"
@@ -525,130 +534,137 @@ const Index = () => {
                 <UserDetails />
               </TabsContent>
             </Tabs>
-          )}
-        </div>
-      ) : (
+          )
+
+
+        ) : (
+          /* Main Application */
+          <div className="max-w-md mx-auto mt-20">
+            <Card className="bg-white/70 backdrop-blur-sm border-gray-200">
+              <CardHeader className="text-center">
+                <div className="bg-gradient-to-r from-blue-600 to-green-600 p-3 rounded-lg w-fit mx-auto mb-4">
+                  <MessageSquare className="h-8 w-8 text-white" />
+                </div>
+                <CardTitle className="text-2xl">Register new User</CardTitle>
+                <CardDescription>
+                  Please register user to access messaging dashboard
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="username">User Name</Label>
+                  <Input
+                    id="username"
+                    type="text"
+                    placeholder="Enter username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Mobile Number</Label>
+                  <Input
+                    id="phone"
+                    type="text"
+                    placeholder="Enter Mobile Number"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                {/* 🌟 Role Dropdown */}
+                <div className="space-y-2">
+                  <Label htmlFor="role">Role</Label>
+                  <select
+                    id="role"
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  >
+                    <option value="">Select role</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                  </select>
+                </div>
+
+
+                <div className="space-y-2">
+                  <Label htmlFor="SubscritionType">Subscrition Type</Label>
+                  <select
+                    id="SubscritionType"
+                    name="SubscritionType"
+                    value={formData.SubscritionType}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  ><option value="">Select Subscription Type</option>
+                    <option value="Starter">Starter (Daily limit: 1000 messages)</option>
+                    <option value="Pro">Pro (Daily limit: 5000 messages)</option>
+                    <option value="Business">Business (Daily limit: 10,000 messages)</option>
+
+                  </select>
+                </div>
+
+                <div className='flex flex-row  gap-2'>
+
+                  <Button
+                    onClick={handleCancelRegister}
+                    className="w-[40%] bg-red-500 text-[#fff] hover:bg-red-700"
+                  >
+
+                    Cancel
+                  </Button>
+
+                  <Button
+                    onClick={handleRegister}
+                    className="w-[50%] bg-blue-600 text-[#fff] hover:bg-blue-700"
+                  >
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Register
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+        )}
 
 
 
-        <div className="max-w-md mx-auto mt-20">
-          <Card className="bg-white/70 backdrop-blur-sm border-gray-200">
-            <CardHeader className="text-center">
-              <div className="bg-gradient-to-r from-blue-600 to-green-600 p-3 rounded-lg w-fit mx-auto mb-4">
-                <MessageSquare className="h-8 w-8 text-white" />
-              </div>
-              <CardTitle className="text-2xl">Register new User</CardTitle>
-              <CardDescription>
-                Please register user to access messaging dashboard
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">User Name</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="Enter username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Mobile Number</Label>
-                <Input
-                  id="phone"
-                  type="text"
-                  placeholder="Enter Mobile Number"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              {/* 🌟 Role Dropdown */}
-              <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                >
-                  <option value="">Select role</option>
-                  <option value="admin">Admin</option>
-                  <option value="user">User</option>
-                </select>
-              </div>
 
 
-              <div className="space-y-2">
-                <Label htmlFor="SubscritionType">Subscrition Type</Label>
-                <select
-                  id="SubscritionType"
-                  name="SubscritionType"
-                  value={formData.SubscritionType}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                ><option value="">Select Subscription Type</option>
-                  <option value="Starter">Starter (Daily limit: 1000 messages)</option>
-                  <option value="Pro">Pro (Daily limit: 5000 messages)</option>
-                  <option value="Business">Business (Daily limit: 10,000 messages)</option>
-               
-                </select>
-              </div>
-
-              <div className='flex flex-row  gap-2'>
-
-                <Button
-                  onClick={handleCancelRegister}
-                  className="w-[40%] bg-red-500 text-[#fff] hover:bg-red-700"
-                >
-
-                  Cancel
-                </Button>
-
-                <Button
-                  onClick={handleRegister}
-                  className="w-[50%] bg-blue-600 text-[#fff] hover:bg-blue-700"
-                >
-                  <LogIn className="mr-2 h-4 w-4" />
-                  Register
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-      )}
 
 
-    </div>
+      </div>
+
+
+    </div >
   );
 };
 
