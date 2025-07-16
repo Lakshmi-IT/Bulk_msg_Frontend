@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import axios from 'axios';
 import { url } from '../utils';
-import QRCode from "qrcode"; 
+import QRCode from "qrcode";
 
 const BulkSender = ({ contacts }) => {
   const [selectedContacts, setSelectedContacts] = useState([]);
@@ -32,7 +32,13 @@ const BulkSender = ({ contacts }) => {
   const [qr, setQr] = useState("")
   const [botstatus, setBotStatus] = useState(false)
   const [qrImage, setQrImage] = useState("");
+
+  const [templates, settemplates] = useState([])
+  const [selectedTemplate, setSelectedTemplate] = useState('');
   const { toast } = useToast();
+  const [subject, setSubject] = useState('');
+  const [selectedId, setSelectedId] = useState("")
+  const [credits, setCredits] = useState(0)
 
   const groups = [...new Set(contacts.map(contact => contact.group))];
 
@@ -84,7 +90,93 @@ const BulkSender = ({ contacts }) => {
     fetchQr();
   }, []);
 
-  console.log(botstatus, "botstatus")
+
+
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get(`${url}/api/auth/getAdmins`); // Adjust to your backend route
+
+        setCredits(res?.data?.data?.[0].credits || 0);
+      } catch (err) {
+        console.error('Failed to load users', err);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+
+
+
+
+  const fetchTemplates = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast({
+          title: "Unauthorized",
+          description: "User token not found. Please login again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await axios.get(`${url}/api/templates`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log(response.data, "response")
+
+      if (response.status === 200 && Array.isArray(response.data)) {
+        const templateList = response.data.map(item => ({
+          subject: item?.subject,
+          content: item?.content,
+          type: item?.type,
+          _id: item?._id,
+        }));
+
+        settemplates([...templateList]);
+
+
+      } else {
+        throw new Error("Unexpected response from server.");
+      }
+    } catch (error) {
+      console.error("Fetch contacts error:", error);
+      toast({
+        title: "Error Fetching Contacts",
+        description:
+          error.response?.data?.message ||
+          "Failed to load contacts. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchTemplates()
+
+  }, []);
+
+  const handleTemplateSelect = (templateId) => {
+
+    console.log(templateId, "templateId")
+
+
+    const template = templates?.find(t => t?._id === templateId);
+
+    if (template) {
+
+      setSubject(template?.subject)
+      setSelectedTemplate(templateId);
+
+      setSelectedId(templateId)
+    }
+  };
 
 
 
@@ -127,6 +219,7 @@ const BulkSender = ({ contacts }) => {
         contactIds: selectedContacts,
         message,
         messageType,
+        selectedId,
       };
 
       console.log(payload, "payload")
@@ -164,7 +257,7 @@ const BulkSender = ({ contacts }) => {
 
   const selectedContactsData = contacts.filter(contact => selectedContacts.includes(contact._id));
 
-  console.log(qrImage,"qrImage")
+  console.log(qrImage, "qrImage")
 
 
 
@@ -278,6 +371,22 @@ const BulkSender = ({ contacts }) => {
             </div>
           </div>
 
+          <div className="space-y-2">
+            <Label>Choose Template</Label>
+            <Select value={selectedTemplate} onValueChange={handleTemplateSelect}>
+              <SelectTrigger className="bg-white border text-black">
+                <SelectValue placeholder="Select a template..." />
+              </SelectTrigger>
+              <SelectContent className="bg-[#fff] text-black">
+                {templates.map((template) => (
+                  <SelectItem key={template._id} value={template._id}>
+                    {template.subject}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Message Content */}
           <div className="space-y-2">
             <Label htmlFor="bulk-message">Message Content</Label>
@@ -306,7 +415,7 @@ const BulkSender = ({ contacts }) => {
 
               <div className="grid grid-cols-4 gap-4 text-center">
                 <div className="space-y-1">
-                  <div className="text-2xl font-bold text-blue-600">{sendingStats.total}</div>
+                  <div className="text-2xl font-bold text-blue-600">{selectedContacts?.length}</div>
                   <div className="text-xs text-gray-500">Total</div>
                 </div>
                 <div className="space-y-1">
@@ -333,14 +442,17 @@ const BulkSender = ({ contacts }) => {
                 Ready to send to {selectedContacts.length} contact{selectedContacts.length !== 1 ? 's' : ''}
               </span>
             </div>
+            <div className='flex flex-col'>
 
             <Button
               onClick={handleSendMessages}
-              disabled={isSending
-                || selectedContacts.length === 0
-                || botstatus === false
+              disabled={
+                isSending ||
+                selectedContacts.length === 0 ||
+                botstatus === false ||
+                credits <= 0
               }
-              className={`bg-green-600 hover:bg-green-700`}
+              className="bg-green-600 hover:bg-green-700"
             >
               {isSending ? (
                 <>
@@ -354,6 +466,29 @@ const BulkSender = ({ contacts }) => {
                 </>
               )}
             </Button>
+
+            {/* Specific error message */}
+            {!isSending && (
+              <>
+                {selectedContacts.length === 0 && (
+                  <p className="text-sm text-red-500 mt-1 font-semibold">
+                    Please select at least one contact.
+                  </p>
+                )}
+                {selectedContacts.length > 0 && !botstatus && (
+                  <p className="text-sm text-red-500 mt-1 font-semibold">
+                    WhatsApp bot is not connected.
+                  </p>
+                )}
+                {selectedContacts.length > 0 && botstatus && credits <= 0 && (
+                  <p className="text-sm text-red-500 mt-1 font-semibold">
+                    You have no remaining credits.
+                  </p>
+                )}
+              </>
+            )}
+            </div>
+
           </div>
 
           {/* Sending Guidelines */}

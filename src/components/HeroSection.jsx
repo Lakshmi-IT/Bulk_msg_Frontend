@@ -44,7 +44,7 @@ function HeroSection() {
                             </div>
                         </div>
                     </div>
-                    <img src="/heroSectionImage.png" alt="hero Image" className='md:w-[600px] md:h-[400px] w-full h-[300px]'/>
+                    <img src="./heroSectionImage.png" alt="hero Image" className='md:w-[600px] md:h-[400px] w-full h-[300px]'/>
                     
                 </div>
             </div>

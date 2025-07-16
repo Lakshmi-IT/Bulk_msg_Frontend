@@ -58,7 +58,7 @@ const ContactManager = ({ contacts, setContacts }) => {
 
 
   const handleSaveEdit = async (id) => {
-   
+
     try {
       const response = await axios.put(
         `${url}/api/users/contacts/${id}`,
@@ -131,7 +131,7 @@ const ContactManager = ({ contacts, setContacts }) => {
   const handleAddContact = async () => {
     const { name, whatsapp, group } = newContact;
 
- 
+
 
     if (!whatsapp || whatsapp.trim() === '') {
       return toast({
@@ -166,7 +166,7 @@ const ContactManager = ({ contacts, setContacts }) => {
         }
       );
 
-      
+
 
       // Response success validation
       if (response) {
@@ -217,7 +217,7 @@ const ContactManager = ({ contacts, setContacts }) => {
         },
       });
 
-  
+
 
       // Directly use response.data if it's already an array
       if (response.status === 200 && Array.isArray(response.data)) {
@@ -247,92 +247,90 @@ const ContactManager = ({ contacts, setContacts }) => {
 
 
 
-const handleImportCSV = () => {
-  const fileInput = document.createElement('input');
-  fileInput.type = 'file';
-  fileInput.accept = '.csv';
+  const handleImportCSV = () => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.csv';
 
-  console.log(fileInput,"fileInput")
+    fileInput.onchange = async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
 
-  fileInput.onchange = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-     console.log(file,"file")
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: async (results) => {
+          try {
+            const rawContacts = results.data;
 
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: async (results) => {
-        try {
-          const rawContacts = results.data;
-           console.log(rawContacts,"rawContacts")
+            // Normalize all keys to lowercase
+            const normalizeKeys = (obj) =>
+              Object.fromEntries(
+                Object.entries(obj).map(([key, value]) => [key.toLowerCase(), value])
+              );
 
-          // Normalize keys to lowercase
-          const normalizeKeys = (obj) =>
-            Object.fromEntries(
-              Object.entries(obj).map(([key, value]) => [key.toLowerCase(), value])
-            );
-     
+            const validContacts = [];
 
-          const validContacts = rawContacts
-            .map(normalizeKeys)
-            .filter((contact, index) => {
+            rawContacts.map(normalizeKeys).forEach((contact) => {
               const name = contact.name?.trim() || "User";
-              const phone = contact.whatsapp?.trim();
-              const nameValid = !!name;
-              const phoneValid = /^\d{10}$/.test(phone);
-              return nameValid && phoneValid;
-            })
-            .map(contact => ({
-              name: contact.name.trim() || "User",
-              whatsapp: contact.whatsapp.trim(),
-              phone: contact.whatsapp.trim(),
-              group: contact.group || 'customers',
-            }));
+              const group = contact.group?.trim() || "customers";
+              const whatsappField = contact.whatsapp?.trim() || "";
 
-            console.log(validContacts,"validContacts")
+              // Match all 10-digit numbers (can be separated by comma, space, etc.)
+              const numbers = whatsappField.match(/\d{10}/g);
 
-          if (validContacts.length === 0) {
+              if (numbers && numbers.length > 0) {
+                numbers.forEach((num) => {
+                  validContacts.push({
+                    name,
+                    whatsapp: num,
+                    phone: num,
+                    group,
+                  });
+                });
+              }
+            });
+
+            if (validContacts.length === 0) {
+              toast({
+                title: "No valid contacts",
+                description: "The uploaded file doesn't contain valid contact data.",
+                variant: "destructive",
+              });
+              return;
+            }
+
+            // Send to backend
+            await axios.post(
+              `${url}/api/users/contacts/bulk`,
+              { contacts: validContacts },
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+              }
+            );
+
             toast({
-              title: "No valid contacts",
-              description: "The uploaded file doesn't contain valid contact data.",
+              title: "Import Complete",
+              description: `${validContacts.length} contacts imported successfully.`,
+            });
+
+            fetchContacts(setContacts, toast); // refresh list
+          } catch (error) {
+            console.error("Import Error:", error);
+            toast({
+              title: "Import Failed",
+              description: "An error occurred while importing contacts.",
               variant: "destructive",
             });
-            return;
           }
+        },
+      });
+    };
 
-          // Send to backend
-          await axios.post(
-            `${url}/api/users/contacts/bulk`,
-            { contacts: validContacts },
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-              },
-            }
-          );
-
-          toast({
-            title: "Import Complete",
-            description: `${validContacts.length} contacts imported successfully.`,
-          });
-
-          fetchContacts(setContacts, toast); // refresh list
-        } catch (error) {
-          console.error("Import Error:", error);
-          toast({
-            title: "Import Failed",
-            description: "An error occurred while importing contacts.",
-            variant: "destructive",
-          });
-        }
-      },
-    });
+    fileInput.click();
   };
-
-  fileInput.click();
-};
-
 
 
   const handleExportCSV = () => {
@@ -586,7 +584,10 @@ const handleImportCSV = () => {
                             <Badge variant="secondary">{contact.group}</Badge>
                           </TableCell>
                           <TableCell>
-                            <Badge variant="secondary">{formatDateTime(contact.createdAt)}</Badge>
+                            <Badge variant="secondary">
+                              {contact?.createdAt ? formatDateTime(contact.createdAt) : ""}
+                            </Badge>
+
 
                           </TableCell>
                           <TableCell>

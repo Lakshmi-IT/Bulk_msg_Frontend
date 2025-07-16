@@ -104,6 +104,7 @@ const UserDetails = () => {
                                     <TableHead>Role</TableHead>
                                     <TableHead>Registered On</TableHead>
                                     <TableHead>Subscription Type</TableHead>
+                                    <TableHead>Credits Left</TableHead>
                                       <TableHead>Status</TableHead>
                                     <TableHead>Actions</TableHead>
 
@@ -121,6 +122,7 @@ const UserDetails = () => {
 
                                             <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                                             <TableCell className="capitalize">{user?.SubscritionType || "Stater"}</TableCell>
+                                            <TableCell className="capitalize">{user?.credits}</TableCell>
                                             <TableCell className={`capitalize font-semibold ${user?.isActive? "text-green-500": "text-red-500"} `}>{user?.isActive ? "Active": "Inactive"}</TableCell>
                                             <TableCell className="space-x-5 flex items-center">
                                                 <button

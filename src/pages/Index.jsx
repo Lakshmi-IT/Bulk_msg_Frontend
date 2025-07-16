@@ -25,6 +25,7 @@ import LoginSection from '../components/LoginSection';
 import Footer from '../components/Footer';
 import Contact from '../components/Contact';
 import Pricing from '../components/Pricing';
+import MegaMenu from '../components/MegaMenu';
 
 const Index = () => {
   const [contacts, setContacts] = useState([
@@ -38,6 +39,8 @@ const Index = () => {
   const { toast } = useToast();
   const [register, setRegister] = useState(false)
   const [menuLogin, setMenuLogin] = useState(false)
+
+  const [credits,setCredits]=useState("")
 
 
 
@@ -202,6 +205,21 @@ const Index = () => {
   }
 
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get(`${url}/api/auth/getAdmins`); // Adjust to your backend route
+      
+        setCredits(res?.data?.data?.[0].credits || 0);
+      } catch (err) {
+        console.error('Failed to load users', err);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+
 
 
   const handleHomeLogin = () => {
@@ -270,6 +288,13 @@ const Index = () => {
                   <span className='text-[#fff]'>Add Users</span>
                 </Button>
               }
+              {isLoggedIn && role === "user" && (
+                <div className="flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-1 rounded-full shadow-sm border border-blue-300 hover:bg-blue-200 transition duration-200">
+                  <div className="text-lg font-semibold">{credits}</div>
+                  <p className="text-sm font-medium">Credits Left</p>
+                </div>
+              )}
+
 
               {/* Authentication Section */}
 
@@ -298,15 +323,7 @@ const Index = () => {
               ) : (
                 <div className="flex items-center space-x-9 ">
                   <div className='lg:flex items-center space-x-9 hidden'>
-
-                    <div className="flex justify-between items-center space-x-2">
-                      <p>Features</p>
-                      <ChevronDown className="w-5 h-5" />
-
-
-
-
-                    </div>
+                    <MegaMenu />
                     <div className="flex justify-between items-center space-x-2">
                       <p>Use Cases</p>
                       <ChevronDown className="w-5 h-5" />
@@ -360,9 +377,9 @@ const Index = () => {
                 <FeaturedSection />
                 <WhatyougetSection />
                 <Testmonials />
-                <Pricing/>
-                <Contact/>
-                <Footer/>
+                <Pricing />
+                <Contact />
+                <Footer />
 
               </div>
             ) : (
@@ -371,9 +388,9 @@ const Index = () => {
             )
           ) : (
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 w-full overflow-x-scroll">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 w-full overflow-x-scroll py-5">
               {/* Navigation */}
-              <TabsList className="flex w-full  mx-auto bg-white/50 backdrop-blur-sm gap-2 overflow-x-scroll px-2 py-1 rounded-lg scrollbar-thin scrollbar-thumb-blue-300">
+              <TabsList className="flex w-full  mx-auto bg-white/50 backdrop-blur-sm gap-2 overflow-x-scroll px-2 h-18  rounded-lg scrollbar-thin scrollbar-thumb-blue-300">
                 <TabsTrigger
                   value="dashboard"
                   className="whitespace-nowrap px-4 py-2 rounded-lg text-sm font-medium data-[state=active]:bg-blue-600 data-[state=active]:text-white"

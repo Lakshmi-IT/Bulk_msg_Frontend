@@ -13,13 +13,17 @@ import axios from 'axios';
 import { url } from '../utils';
 
 const MessageComposer = () => {
-  const [messageType, setMessageType] = useState('sms');
+  const [messageType, setMessageType] = useState('WhatsApp');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const { toast } = useToast();
   const [showPreview, setShowPreview] = useState(false);
   const [templates, settemplates] = useState([])
+
+  const [updatetemplate, setUpdateTemplate] = useState(false)
+
+  const [selectedId, setSelectedId] = useState("")
 
   const handlePreview = () => {
     if (!message) {
@@ -58,10 +62,12 @@ const MessageComposer = () => {
       if (response.status === 200 && Array.isArray(response.data)) {
         const templateList = response.data.map(item => ({
           subject: item?.subject,
+          content: item?.content,
+          type: item?.type,
           _id: item?._id,
         }));
 
-        settemplates(prevTemplates => [...prevTemplates, ...templateList]);
+        settemplates([...templateList]);
 
 
       } else {
@@ -84,13 +90,56 @@ const MessageComposer = () => {
 
   }, []);
 
+
+  const updateTemplatefunction = async (id, type, subject, content) => {
+    console.log(id, type, subject, content, "data")
+    try {
+      const response = await axios.put(
+        `${url}/api/templates/${id}`,
+        { type, subject, content },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      toast({
+        title: "Template updated",
+        description: `Template has been updated.`,
+      });
+      setSelectedTemplate("")
+      setMessage("")
+      setSubject("")
+    } catch (error) {
+      console.error("Error updating template:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update template.",
+        variant: "destructive",
+      });
+    }
+  };
+
+
+
+
   const variables = ['{{name}}', '{{phone}}', '{{company}}', '{{date}}', '{{time}}'];
 
+
+
   const handleTemplateSelect = (templateId) => {
-    const template = templates.find(t => t.id === templateId);
+
+
+    const template = templates?.find(t => t?._id === templateId);
+
     if (template) {
-      setMessage(template.content);
+      setMessage(template?.content);
       setSelectedTemplate(templateId);
+      setSubject(template?.subject)
+      setMessageType(template?.type)
+      setUpdateTemplate(true)
+      setSelectedId(templateId)
     }
   };
 
@@ -137,6 +186,9 @@ const MessageComposer = () => {
         title: "Success",
         description: "Template sent to backend successfully.",
       });
+      setSelectedTemplate("")
+      setMessage("")
+      setSubject("")
     } catch (error) {
       console.error("Failed to send message:", error);
       toast({
@@ -146,6 +198,14 @@ const MessageComposer = () => {
       });
     }
   };
+
+
+  // const [selectedTemplate, setSelectedTemplate] = useState("");
+
+  // const handleTemplateSelect = (value) => {
+  //   setSelectedTemplate(value);
+  //   console.log("Selected Template ID:", value);
+  // };
 
 
   // const handlePreview = () => {
@@ -213,7 +273,7 @@ const MessageComposer = () => {
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-[#fff]">
                 <SelectItem value="sms">SMS</SelectItem>
                 <SelectItem value="whatsapp">WhatsApp</SelectItem>
               </SelectContent>
@@ -224,13 +284,13 @@ const MessageComposer = () => {
           <div className="space-y-2">
             <Label>Choose Template (Optional)</Label>
             <Select value={selectedTemplate} onValueChange={handleTemplateSelect}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white border text-black">
                 <SelectValue placeholder="Select a template..." />
               </SelectTrigger>
-              <SelectContent>
-                {templates.map(template => (
+              <SelectContent className="bg-[#fff] text-black">
+                {templates.map((template) => (
                   <SelectItem key={template._id} value={template._id}>
-                    {template.name}
+                    {template.subject}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -307,10 +367,21 @@ const MessageComposer = () => {
               )}
               Preview
             </Button>
-            <Button variant="outline" onClick={handleSaveTemplate}>
-              <Save className="h-4 w-4 mr-2" />
-              Save Template
-            </Button>
+
+            {updatetemplate ? (
+              <Button onClick={() => updateTemplatefunction(selectedId, messageType, subject, message)}>
+                <Save className="h-4 w-4 mr-2" />
+                Update Template
+              </Button>
+
+            ) : (
+              <Button variant="outline" onClick={handleSaveTemplate}>
+                <Save className="h-4 w-4 mr-2" />
+                Save Template
+              </Button>
+            )
+            }
+
             <Button>
               <Sparkles className="h-4 w-4 mr-2" />
               Use Message
@@ -335,8 +406,8 @@ const MessageComposer = () => {
           <div className="bg-[#075e54] text-white flex items-center px-4 py-2">
             <div className="bg-white rounded-full w-8 h-8 mr-3"></div>
             <div>
-              <div className="font-medium">Person</div>
-              <div className="text-xs text-gray-200">last seen today at 20:30</div>
+              <div className="font-medium">LakshmiIT</div>
+              <div className="text-xs text-gray-200">Business Account</div>
             </div>
           </div>
 
