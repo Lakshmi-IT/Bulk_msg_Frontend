@@ -8,5 +8,5 @@ const isElectron = () =>
   window.process.type === 'renderer';
 
 export const url = isElectron()
-  ? "https://backend.nirvinfertilizerandpesticidesprivatelimited.com/"
+  ? "https://backend.nirvinfertilizerandpesticidesprivatelimited.com"
   : "http://localhost:5000";               
