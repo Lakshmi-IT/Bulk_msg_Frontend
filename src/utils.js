@@ -1,5 +1,6 @@
 // // export const url="https://bulkmsg-backend.onrender.com"
-// export const url="http://localhost:5000"
+// export const url="http://0.0.0.0:5000"
+
 
 const isElectron = () =>
   typeof window !== 'undefined' &&
@@ -7,5 +8,5 @@ const isElectron = () =>
   window.process.type === 'renderer';
 
 export const url = isElectron()
-  ? "http://98.81.180.104:5000" // for Electron build
-  : "http://localhost:5000";               // for local dev
+  ? "https://backend.nirvinfertilizerandpesticidesprivatelimited.com/"
+  : "http://localhost:5000";               
